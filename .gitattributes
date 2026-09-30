@@ -1,0 +1,11 @@
+# Keep text files normalized to LF in Git
+* text=auto
+
+# Jupyter notebooks
+*.ipynb text eol=lf
+
+# Python
+*.py text eol=lf
+
+# Markdown
+*.md text eol=lf
