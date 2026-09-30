@@ -216,3 +216,17 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+# =========================
+# Data
+# =========================
+
+# Raw datasets
+data/raw/
+
+# Generated/intermediate datasets
+data/interim/
+
+# Processed datasets
+data/processed/
