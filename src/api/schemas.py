@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 from datetime import datetime
+import re
 from typing import Any, Literal, TypeAlias
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from src.features.engineering import EMP_LENGTH_MAP
 
 
 # Must stay aligned with ``model_metadata.json`` produced by the training job.
@@ -42,7 +45,10 @@ class ApplicantInput(BaseModel):
     issue_d: datetime = Field(description="Loan issue/application date used for credit-history length.")
     earliest_cr_line: datetime = Field(description="Earliest credit-line date used for credit-history length.")
     loan_amnt: Numeric
-    term: str | int = Field(description="Raw Lending Club term, for example ' 36 months' or 36.")
+    term: str | int = Field(
+        description="Lending Club repayment term: 36 or 60 months.",
+        examples=["36 months", 36],
+    )
     annual_inc: Numeric
     dti: Numeric
     delinq_2yrs: Numeric
@@ -90,7 +96,10 @@ class ApplicantInput(BaseModel):
     total_bal_ex_mort: Numeric
     total_bc_limit: Numeric
     total_il_high_credit_limit: Numeric
-    emp_length: str | int = Field(description="Raw employment length, for example '10+ years'; cleaned 0-10 values are also accepted.")
+    emp_length: str | int = Field(
+        description="Raw Lending Club employment length or a cleaned whole-year value from 0 through 10.",
+        examples=["10+ years", 5],
+    )
     mths_since_last_record: OptionalNumeric
     mths_since_recent_bc_dlq: OptionalNumeric
     mths_since_last_major_derog: OptionalNumeric
@@ -99,7 +108,65 @@ class ApplicantInput(BaseModel):
     home_ownership: Category
     verification_status: Category
     purpose: Category
-    zip_code: Category
+    zip_code: Category = Field(
+        description="ZIP code or Lending Club ZIP prefix, for example '941xx'.",
+        examples=["941xx", "94107"],
+    )
+
+    @field_validator("term", mode="before")
+    @classmethod
+    def validate_term(cls, value: object) -> int:
+        """Reject Swagger placeholder text and normalize valid repayment terms."""
+        if isinstance(value, bool):
+            raise ValueError("term must be 36 or 60 months.")
+        if isinstance(value, int):
+            months = value
+        elif isinstance(value, float) and value.is_integer():
+            months = int(value)
+        elif isinstance(value, str):
+            match = re.fullmatch(r"\s*(36|60)(?:\s+months)?\s*", value)
+            if match is None:
+                raise ValueError("term must be 36 or 60 months.")
+            months = int(match.group(1))
+        else:
+            raise ValueError("term must be 36 or 60 months.")
+        if months not in (36, 60):
+            raise ValueError("term must be 36 or 60 months.")
+        return months
+
+    @field_validator("emp_length", mode="before")
+    @classmethod
+    def validate_emp_length(cls, value: object) -> str | int:
+        """Reject placeholder text before it can reach the saved model."""
+        if isinstance(value, bool):
+            raise ValueError("emp_length must be a Lending Club label or an integer from 0 through 10.")
+        if isinstance(value, int):
+            if 0 <= value <= 10:
+                return value
+        elif isinstance(value, float):
+            if value.is_integer() and 0 <= value <= 10:
+                return int(value)
+        elif isinstance(value, str):
+            normalized = value.strip()
+            if normalized in EMP_LENGTH_MAP:
+                return normalized
+            if normalized.isdigit() and 0 <= int(normalized) <= 10:
+                return int(normalized)
+        raise ValueError(
+            "emp_length must be one of '< 1 year', '1 year' through '9 years', "
+            "'10+ years', or an integer from 0 through 10."
+        )
+
+    @field_validator("zip_code", mode="before")
+    @classmethod
+    def validate_zip_code(cls, value: object) -> str:
+        """Prevent Swagger's generic string placeholder reaching the model."""
+        if not isinstance(value, str):
+            raise ValueError("zip_code must start with a ZIP digit, for example '941xx'.")
+        normalized = value.strip()
+        if not re.fullmatch(r"\d{1,5}(?:xx)?", normalized, flags=re.IGNORECASE):
+            raise ValueError("zip_code must start with a ZIP digit, for example '941xx'.")
+        return normalized
 
 
 class PredictionResponse(BaseModel):

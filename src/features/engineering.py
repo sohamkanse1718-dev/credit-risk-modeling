@@ -37,7 +37,9 @@ def term_to_months(term: pd.Series) -> pd.Series:
     invalid = result.notna() & ~result.isin([36, 60])
     if invalid.any():
         raise ValueError("term must be either 36 or 60 months.")
-    return result
+    # StringDtype input makes ``to_numeric`` return pandas' nullable dtype.
+    # ColumnTransformer requires a regular NumPy-compatible array instead.
+    return result.astype("float64")
 
 
 def emp_length_to_years(emp_length: pd.Series) -> pd.Series:
@@ -51,13 +53,11 @@ def emp_length_to_years(emp_length: pd.Series) -> pd.Series:
 
 
 def zip_code_to_first_digit(zip_code: pd.Series) -> pd.Series:
-    """Aggregate sparse ZIP codes into their first digit, retaining unknown values."""
-    return (
-        zip_code.astype("string")
-        .str.extract(r"^(\d)", expand=False)
-        .fillna("Unknown")
-        .astype("string")
-    )
+    """Aggregate sparse ZIP codes into a numeric first digit for the model."""
+    first_digit = zip_code.astype("string").str.extract(r"^(\d)", expand=False)
+    # ZIP is a numeric remainder feature in the saved ColumnTransformer. Missing
+    # or malformed values must therefore remain numeric NaN, never "Unknown".
+    return pd.to_numeric(first_digit, errors="coerce").astype("float64")
 
 
 def clean_dti(dti: pd.Series) -> pd.Series:

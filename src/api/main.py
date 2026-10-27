@@ -39,6 +39,15 @@ def _unavailable(exc: Exception) -> HTTPException:
     return HTTPException(status_code=503, detail=f"Model is unavailable: {exc}")
 
 
+def _prediction_error(exc: Exception) -> HTTPException:
+    """Keep malformed requests separate from an actually unavailable model."""
+    if not predictor.is_ready:
+        return _unavailable(exc)
+    if isinstance(exc, ValueError):
+        return HTTPException(status_code=422, detail=str(exc))
+    return HTTPException(status_code=500, detail="Prediction failed unexpectedly.")
+
+
 @app.get("/", response_model=ServiceInfoResponse)
 def root() -> ServiceInfoResponse:
     return ServiceInfoResponse(
@@ -74,7 +83,7 @@ def predict(applicant: ApplicantInput) -> PredictionResponse:
     try:
         return PredictionResponse(**predictor.predict([applicant.model_dump()])[0])
     except Exception as exc:
-        raise _unavailable(exc) from exc
+        raise _prediction_error(exc) from exc
 
 
 @app.post("/predict/batch", response_model=BatchPredictionResponse)
@@ -83,4 +92,4 @@ def predict_batch(request: BatchPredictionRequest) -> BatchPredictionResponse:
         predictions = [PredictionResponse(**item) for item in predictor.predict(item.model_dump() for item in request.applicants)]
         return BatchPredictionResponse(predictions=predictions, count=len(predictions))
     except Exception as exc:
-        raise _unavailable(exc) from exc
+        raise _prediction_error(exc) from exc
