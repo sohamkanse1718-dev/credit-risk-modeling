@@ -1,0 +1,80 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Python artifacts and bytecode cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+*.egg-info/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables & secrets
+.env
+.env.*
+.envrc
+
+# Testing & coverage
+tests/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.hypothesis/
+.tox/
+.nox/
+
+# Linting & static analysis
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter notebooks and checkpoints
+notebooks/
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# Data files (raw, interim, processed datasets)
+data/
+data/raw/*
+data/interim/*
+data/processed/*
+
+# Logs & temporary files
+logs/
+*.log
+tempCodeRunnerFile.py
+
+# Reports & documentation
+reports/
+
+# OS and IDE configuration
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker artifacts
+Dockerfile*
+.dockerignore
+.dockignore
+docker-compose*.yml
