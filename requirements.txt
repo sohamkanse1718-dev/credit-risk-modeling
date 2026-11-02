@@ -4,4 +4,7 @@ joblib
 pandas
 scikit-learn
 xgboost
+mlflow
+matplotlib
+pyyaml
 pytest==9.1.1

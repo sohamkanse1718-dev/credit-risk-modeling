@@ -1,30 +1,59 @@
 # =========================
-# Python
+# Python & Bytecode
 # =========================
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+*.dylib
+*.dll
 *.egg-info/
+*.egg
 build/
 dist/
 .eggs/
+develop-eggs/
+downloads/
+parts/
+var/
 
 # =========================
-# Virtual environments
+# Virtual Environments
 # =========================
 venv/
 .venv/
 env/
 ENV/
+env.bak/
+venv.bak/
+conda/
+.conda/
 
 # =========================
-# Secrets / local config
+# Secrets, Passwords & Credentials (CRITICAL)
 # =========================
 .env
+.env.*
+*.env
 .envrc
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.id_rsa
+id_rsa*
+id_ed25519*
+secrets.json
+credentials.json
+service-account*.json
+*service_account*.json
+client_secrets*.json
+*.token
 
 # =========================
-# Testing / tooling caches
+# Testing & Tooling Caches
 # =========================
 .pytest_cache/
 .coverage
@@ -33,22 +62,29 @@ htmlcov/
 .hypothesis/
 .mypy_cache/
 .ruff_cache/
+.tox/
+.nox/
+coverage.xml
+nosetests.xml
 
 # =========================
-# Jupyter
+# Jupyter Notebooks
 # =========================
 .ipynb_checkpoints/
+*-checkpoint.ipynb
 
 # =========================
-# Logs (e.g. API prediction logs)
+# Logs & Monitoring
 # =========================
 *.log
 logs/
+pip-log.txt
+pip-delete-this-directory.txt
 
 # =========================
-# Data (large and regenerable)
-# Ignore contents, keep the folders via .gitkeep
+# Data (Large & Regenerable Datasets)
 # =========================
+# Ignore data subfolders but keep directory structure via .gitkeep
 data/raw/*
 data/interim/*
 data/processed/*
@@ -56,17 +92,60 @@ data/processed/*
 !data/interim/.gitkeep
 !data/processed/.gitkeep
 
-# Keep small test fixtures tracked
-!tests/fixtures/
-!tests/fixtures/*.csv
+# Catch loose data files placed in data/
+data/*.csv
+data/*.parquet
+data/*.feather
 
+# Compressed archives often containing massive raw datasets
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.bz2
+
+# Keep test fixtures tracked
+!tests/fixtures/
+!tests/fixtures/*
 
 # =========================
-# OS / editor
+# Model Artifacts & Checkpoints
+# =========================
+# Note: Production model (models/model.pkl, models/model_metadata.json) remains tracked.
+# Ignore temporary checkpoints, extra serialized models, and heavy dumps.
+models/*.joblib
+models/*.onnx
+models/*.pt
+models/*.bin
+models/checkpoints/
+
+# =========================
+# MLflow Tracking & Artifacts
+# =========================
+mlflow.db
+mlflow.db-journal
+mlflow.db-wal
+mlflow.db-shm
+*.db-journal
+*.db-wal
+*.db-shm
+mlruns/
+mlartifacts/
+.trash/
+
+# =========================
+# Operating System & Editors
 # =========================
 Thumbs.db
+ehthumbs.db
 desktop.ini
 .DS_Store
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 tempCodeRunnerFile.py
+*.code-workspace

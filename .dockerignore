@@ -78,3 +78,9 @@ Dockerfile*
 .dockerignore
 .dockignore
 docker-compose*.yml
+
+# MLflow Tracking & Artifacts
+mlflow.db*
+mlruns/
+mlartifacts/
+.trash/
