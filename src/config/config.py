@@ -61,6 +61,10 @@ def load_config(config_path: Path | str | None = None) -> AppConfig:
     root = get_project_root()
     if config_path is None:
         config_path = root / "configs" / "config.yaml"
+        if not config_path.exists() or config_path.stat().st_size == 0:
+            example_path = root / "configs" / "config.example.yaml"
+            if example_path.exists():
+                config_path = example_path
     else:
         config_path = Path(config_path)
 
@@ -68,6 +72,13 @@ def load_config(config_path: Path | str | None = None) -> AppConfig:
     if config_path.exists():
         with open(config_path, "r", encoding="utf-8") as f:
             data = yaml.safe_load(f) or {}
+
+    # If data is empty after loading, fall back to config.example.yaml
+    if not data:
+        example_path = root / "configs" / "config.example.yaml"
+        if example_path.exists():
+            with open(example_path, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
 
     mlflow_data = data.get("mlflow", {})
     business_data = data.get("business", {})

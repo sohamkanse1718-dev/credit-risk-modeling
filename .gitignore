@@ -36,6 +36,8 @@ conda/
 .env.*
 *.env
 .envrc
+configs/config.yaml
+!configs/config.example.yaml
 *.pem
 *.key
 *.cert
