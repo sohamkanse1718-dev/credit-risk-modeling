@@ -235,8 +235,8 @@ curl -X POST "http://localhost:8000/predict" \
 ### 1. Setup Environment
 ```powershell
 # Clone repository
-git clone https://github.com/your-username/ML_Project.git
-cd ML_Project
+git clone https://github.com/sohamkanse1718-dev/credit-risk-modeling.git
+cd credit-risk-modeling
 
 # Create and activate virtual environment
 python -m venv venv
