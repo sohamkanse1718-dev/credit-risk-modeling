@@ -310,6 +310,12 @@ docker inspect --format='{{json .State.Health}}' lending-risk-service
 
 ---
 
-## 8. License & Attribution
+## 8. Cloud Deployment (Next Target)
+
+The upcoming roadmap focuses on transitioning the localized production pipeline into a scalable, enterprise-grade cloud architecture:
+
+---
+
+## 9. License & Attribution
 
 This project is developed for educational and portfolio demonstration of production-grade Machine Learning and MLOps engineering. Data source provided by Lending Club via public loan disclosure archives.
